@@ -1,0 +1,2034 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SRE Quiz Application</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f7fa;
+            color: #2c3e50;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .quiz-container {
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            margin-bottom: 30px;
+        }
+
+        header {
+            background-color: #3498db;
+            color: #ffffff;
+            padding: 20px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .quiz-header {
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #2c3e50;
+            color: #ffffff;
+        }
+
+        .quiz-header h2 {
+            font-size: 18px;
+        }
+
+        .quiz-body {
+            padding: 30px;
+        }
+
+        .question {
+            font-size: 18px;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        .options {
+            list-style-type: none;
+        }
+
+        .option {
+            background-color: #ecf0f1;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .option:hover {
+            background-color: #e3e7ea;
+        }
+
+        .option.selected {
+            background-color: #3498db;
+            color: #ffffff;
+            border-color: #3498db;
+        }
+
+        .option.correct {
+            background-color: #2ecc71;
+            color: #ffffff;
+            border-color: #2ecc71;
+        }
+
+        .option.wrong {
+            background-color: #e74c3c;
+            color: #ffffff;
+            border-color: #e74c3c;
+        }
+
+        .quiz-footer {
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .button {
+            background-color: #3498db;
+            color: #ffffff;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        .button:hover {
+            background-color: #2980b9;
+        }
+
+        .button:disabled {
+            background-color: #95a5a6;
+            cursor: not-allowed;
+        }
+
+        .button.next {
+            background-color: #2ecc71;
+        }
+
+        .button.next:hover {
+            background-color: #27ae60;
+        }
+
+        .progress-container {
+            width: 100%;
+            height: 10px;
+            background-color: #ecf0f1;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 30px;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background-color: #3498db;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .result-container {
+            text-align: center;
+            padding: 30px;
+            display: none;
+        }
+
+        .result-container h2 {
+            font-size: 24px;
+            margin-bottom: 15px;
+        }
+
+        .result-container p {
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+
+        .result-container .score {
+            font-size: 48px;
+            font-weight: bold;
+            color: #3498db;
+            margin-bottom: 30px;
+        }
+
+        .welcome-container {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .welcome-container h2 {
+            font-size: 28px;
+            margin-bottom: 20px;
+            color: #2c3e50;
+        }
+
+        .welcome-container p {
+            font-size: 16px;
+            margin-bottom: 30px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .difficulty-selector {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .difficulty-btn {
+            padding: 12px 25px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            border: 2px solid #3498db;
+            background-color: transparent;
+            color: #3498db;
+            transition: all 0.3s;
+        }
+
+        .difficulty-btn:hover, .difficulty-btn.selected {
+            background-color: #3498db;
+            color: #ffffff;
+        }
+
+        .difficulty-btn.easy {
+            border-color: #2ecc71;
+            color: #2ecc71;
+        }
+
+        .difficulty-btn.easy:hover, .difficulty-btn.easy.selected {
+            background-color: #2ecc71;
+            color: #ffffff;
+        }
+
+        .difficulty-btn.medium {
+            border-color: #f39c12;
+            color: #f39c12;
+        }
+
+        .difficulty-btn.medium:hover, .difficulty-btn.medium.selected {
+            background-color: #f39c12;
+            color: #ffffff;
+        }
+
+        .difficulty-btn.hard {
+            border-color: #e74c3c;
+            color: #e74c3c;
+        }
+
+        .difficulty-btn.hard:hover, .difficulty-btn.hard.selected {
+            background-color: #e74c3c;
+            color: #ffffff;
+        }
+
+        .review-container {
+            padding: 30px;
+            display: none;
+        }
+
+        .review-question {
+            background-color: #ecf0f1;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .review-question h3 {
+            margin-bottom: 10px;
+        }
+
+        .review-question p {
+            margin-bottom: 15px;
+        }
+
+        .review-question .user-answer {
+            font-weight: bold;
+        }
+
+        .review-question .user-answer.correct {
+            color: #2ecc71;
+        }
+
+        .review-question .user-answer.incorrect {
+            color: #e74c3c;
+        }
+
+        .explanation {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            border-left: 4px solid #3498db;
+            margin-top: 15px;
+        }
+        
+        .feedback-message {
+            font-weight: bold;
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+        }
+        
+        .feedback-message.correct {
+            background-color: rgba(46, 204, 113, 0.2);
+            color: #2ecc71;
+        }
+        
+        .feedback-message.incorrect {
+            background-color: rgba(231, 76, 60, 0.2);
+            color: #e74c3c;
+        }
+        
+        .export-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .export-btn {
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            background-color: #ecf0f1;
+            border: 2px solid #2c3e50;
+            color: #2c3e50;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        
+        .export-btn:hover {
+            background-color: #2c3e50;
+            color: #ffffff;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+
+            h1 {
+                font-size: 20px;
+            }
+
+            .quiz-header h2 {
+                font-size: 16px;
+            }
+
+            .quiz-body {
+                padding: 20px;
+            }
+
+            .question {
+                font-size: 16px;
+            }
+
+            .option {
+                padding: 12px;
+            }
+
+            .button {
+                padding: 10px 20px;
+                font-size: 14px;
+            }
+
+            .result-container .score {
+                font-size: 36px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 18px;
+            }
+
+            .quiz-header {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .quiz-body {
+                padding: 15px;
+            }
+
+            .question {
+                font-size: 15px;
+            }
+
+            .option {
+                padding: 10px;
+            }
+
+            .button {
+                padding: 8px 16px;
+                font-size: 13px;
+            }
+            
+            .export-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Site Reliability Engineering (SRE) Quiz</h1>
+            <p>Test your knowledge of SRE principles and practices</p>
+        </header>
+
+        <div class="welcome-container" id="welcome-container">
+            <h2>Welcome to the SRE Quiz!</h2>
+            <p>This quiz will test your knowledge of Site Reliability Engineering principles, practices, and concepts based on training content from Google, Microsoft, Amazon, and other major tech companies.</p>
+            
+            <div class="difficulty-selector">
+                <h3>Select Difficulty:</h3>
+            </div>
+            <div class="difficulty-selector">
+                <button class="difficulty-btn easy" onclick="selectDifficulty('easy')">Easy</button>
+                <button class="difficulty-btn medium" onclick="selectDifficulty('medium')">Medium</button>
+                <button class="difficulty-btn hard" onclick="selectDifficulty('hard')">Hard</button>
+                <button class="difficulty-btn" onclick="selectDifficulty('all')">All Questions</button>
+            </div>
+            
+            <button class="button" id="start-btn" onclick="startQuiz()">Start Quiz</button>
+        </div>
+
+        <div class="quiz-container" id="quiz-container" style="display: none;">
+            <div class="progress-container">
+                <div class="progress-bar" id="progress-bar"></div>
+            </div>
+            
+            <div class="quiz-header">
+                <h2>Question <span id="current-question">1</span> of <span id="total-questions">10</span></h2>
+            </div>
+            
+            <div class="quiz-body">
+                <div class="question" id="question-text">
+                    Question goes here
+                </div>
+                <ul class="options" id="options-list">
+                    <!-- Options will be inserted here by JavaScript -->
+                </ul>
+                <div class="feedback-message" id="feedback-message" style="display: none;"></div>
+                <div class="explanation" id="explanation-popup" style="display: none;"></div>
+            </div>
+            
+            <div class="quiz-footer">
+                <button class="button" id="prev-btn" onclick="previousQuestion()" disabled>Previous</button>
+                <button class="button next" id="next-btn" onclick="nextQuestion()" disabled>Next</button>
+            </div>
+        </div>
+
+        <div class="result-container" id="result-container">
+            <h2>Quiz Complete!</h2>
+            <p>You scored:</p>
+            <div class="score"><span id="score">0</span>/<span id="total-score">0</span></div>
+            <p><span id="score-message">Great job!</span></p>
+            <div class="export-buttons">
+                <button class="export-btn" id="export-csv-btn" onclick="exportToCSV()">Export to CSV</button>
+                <button class="export-btn" id="export-pdf-btn" onclick="exportToPDF()">Export to PDF</button>
+            </div>
+            <button class="button" id="review-btn" onclick="showReview()">Review Answers</button>
+            <button class="button" id="restart-btn" onclick="restartQuiz()">Restart Quiz</button>
+        </div>
+
+        <div class="review-container" id="review-container">
+            <h2>Review Your Answers</h2>
+            <div id="review-questions">
+                <!-- Review questions will be inserted here by JavaScript -->
+            </div>
+            <button class="button" id="back-to-results-btn" onclick="backToResults()">Back to Results</button>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script>
+        // Global variables
+        let currentQuestions = [];
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let userAnswers = [];
+        let selectedDifficulty = "all";
+
+        // Select difficulty
+        function selectDifficulty(difficulty) {
+            // Update selected difficulty
+            selectedDifficulty = difficulty;
+            
+            // Update button styles
+            document.querySelectorAll('.difficulty-btn').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            
+            // Find the button with the matching difficulty and add the selected class
+            document.querySelectorAll('.difficulty-btn').forEach(btn => {
+                if (btn.textContent.toLowerCase() === difficulty || 
+                    (btn.textContent === "All Questions" && difficulty === "all")) {
+                    btn.classList.add('selected');
+                }
+            });
+        }
+
+        // Start the quiz
+        function startQuiz() {
+            // Hide welcome container and show quiz container
+            document.getElementById('welcome-container').style.display = 'none';
+            document.getElementById('quiz-container').style.display = 'block';
+            
+            // Filter questions based on selected difficulty
+            if (selectedDifficulty === "all") {
+                // Select random questions - 10 from each difficulty
+                const easyQuestions = quizQuestions.filter(q => q.difficulty === "easy");
+                const mediumQuestions = quizQuestions.filter(q => q.difficulty === "medium");
+                const hardQuestions = quizQuestions.filter(q => q.difficulty === "hard");
+                
+                const selectedEasy = getRandomQuestions(easyQuestions, 10);
+                const selectedMedium = getRandomQuestions(mediumQuestions, 10);
+                const selectedHard = getRandomQuestions(hardQuestions, 10);
+                
+                currentQuestions = [...selectedEasy, ...selectedMedium, ...selectedHard];
+                // Shuffle the combined questions
+                currentQuestions = shuffleArray(currentQuestions);
+            } else {
+                // Filter questions by selected difficulty and take 20 random ones
+                const filteredQuestions = quizQuestions.filter(q => q.difficulty === selectedDifficulty);
+                const numToSelect = Math.min(filteredQuestions.length, 20);
+                currentQuestions = getRandomQuestions(filteredQuestions, numToSelect);
+            }
+            
+            // Initialize user answers array
+            userAnswers = Array(currentQuestions.length).fill(null);
+            
+            // Update total questions display
+            document.getElementById('total-questions').textContent = currentQuestions.length;
+            
+            // Load first question
+            loadQuestion(0);
+        }
+
+        // Load a question
+        function loadQuestion(index) {
+            // Update current question index
+            currentQuestionIndex = index;
+            
+            // Update question number display
+            document.getElementById('current-question').textContent = index + 1;
+            
+            // Update progress bar
+            const progress = ((index + 1) / currentQuestions.length) * 100;
+            document.getElementById('progress-bar').style.width = progress + '%';
+            
+            // Update question text
+            document.getElementById('question-text').textContent = currentQuestions[index].question;
+            
+            // Enable/disable navigation buttons
+            document.getElementById('prev-btn').disabled = index === 0;
+            document.getElementById('next-btn').disabled = userAnswers[index] === null;
+            
+            // Hide feedback and explanation
+            document.getElementById('feedback-message').style.display = 'none';
+            document.getElementById('explanation-popup').style.display = 'none';
+            
+            // Clear options list
+            const optionsList = document.getElementById('options-list');
+            optionsList.innerHTML = '';
+            
+            // Add options
+            currentQuestions[index].options.forEach((option, i) => {
+                const li = document.createElement('li');
+                li.className = 'option';
+                li.textContent = option;
+                
+                // Add selected class if this option was previously selected
+                if (userAnswers[index] === i) {
+                    li.classList.add('selected');
+                    
+                    // If answer was selected, show feedback
+                    if (i === currentQuestions[index].answer) {
+                        li.classList.add('correct');
+                    } else {
+                        li.classList.add('wrong');
+                        // Find the correct answer and highlight it
+                        const correctIndex = currentQuestions[index].answer;
+                        setTimeout(() => {
+                            document.querySelectorAll('.option')[correctIndex].classList.add('correct');
+                        }, 0);
+                    }
+                }
+                
+                // Add click event listener
+                li.onclick = function() {
+                    selectOption(i);
+                };
+                
+                optionsList.appendChild(li);
+            });
+        }
+
+        // Select an option
+        function selectOption(optionIndex) {
+            // Save the answer
+            userAnswers[currentQuestionIndex] = optionIndex;
+            
+            // Clear previous selection
+            document.querySelectorAll('.option').forEach(option => {
+                option.classList.remove('selected', 'correct', 'wrong');
+            });
+            
+            // Add selected class to the clicked option
+            const selectedOption = document.querySelectorAll('.option')[optionIndex];
+            selectedOption.classList.add('selected');
+            
+            // Show immediate feedback
+            const currentQuestion = currentQuestions[currentQuestionIndex];
+            const isCorrect = optionIndex === currentQuestion.answer;
+            const feedbackMessage = document.getElementById('feedback-message');
+            
+            if (isCorrect) {
+                selectedOption.classList.add('correct');
+                feedbackMessage.textContent = "Correct! Great job!";
+                feedbackMessage.className = "feedback-message correct";
+            } else {
+                selectedOption.classList.add('wrong');
+                // Highlight the correct answer
+                document.querySelectorAll('.option')[currentQuestion.answer].classList.add('correct');
+                feedbackMessage.textContent = "Incorrect. The correct answer is shown.";
+                feedbackMessage.className = "feedback-message incorrect";
+            }
+            
+            feedbackMessage.style.display = 'block';
+            
+            // Show explanation
+            const explanationPopup = document.getElementById('explanation-popup');
+            explanationPopup.innerHTML = `<strong>Explanation:</strong> ${currentQuestion.explanation}`;
+            explanationPopup.style.display = 'block';
+            
+            // Enable next button
+            document.getElementById('next-btn').disabled = false;
+        }
+
+        // Go to previous question
+        function previousQuestion() {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                loadQuestion(currentQuestionIndex);
+            }
+        }
+
+        // Go to next question
+        function nextQuestion() {
+            if (currentQuestionIndex < currentQuestions.length - 1) {
+                currentQuestionIndex++;
+                loadQuestion(currentQuestionIndex);
+            } else {
+                finishQuiz();
+            }
+        }
+
+        // Finish the quiz
+        function finishQuiz() {
+            // Calculate score
+            score = 0;
+            userAnswers.forEach((answer, index) => {
+                if (answer === currentQuestions[index].answer) {
+                    score++;
+                }
+            });
+            
+            // Update result container
+            document.getElementById('score').textContent = score;
+            document.getElementById('total-score').textContent = currentQuestions.length;
+            
+            const percentage = (score / currentQuestions.length) * 100;
+            
+            // Set appropriate message based on score
+            if (percentage >= 90) {
+                document.getElementById('score-message').textContent = "Outstanding! You're an SRE expert!";
+            } else if (percentage >= 70) {
+                document.getElementById('score-message').textContent = "Great job! You have solid SRE knowledge.";
+            } else if (percentage >= 50) {
+                document.getElementById('score-message').textContent = "Good effort! Keep learning about SRE.";
+            } else {
+                document.getElementById('score-message').textContent = "You're just getting started with SRE. Keep studying!";
+            }
+            
+            // Hide quiz container and show result container
+            document.getElementById('quiz-container').style.display = 'none';
+            document.getElementById('result-container').style.display = 'block';
+        }
+
+        // Export results to CSV
+        function exportToCSV() {
+            let csvContent = "data:text/csv;charset=utf-8,";
+            
+            // Header row
+            csvContent += "Question,Your Answer,Correct Answer,Result\n";
+            
+            // Data rows
+            currentQuestions.forEach((question, index) => {
+                const userAnswer = userAnswers[index] !== null ? question.options[userAnswers[index]] : "Not answered";
+                const correctAnswer = question.options[question.answer];
+                const result = userAnswers[index] === question.answer ? "Correct" : "Incorrect";
+                
+                // Escape commas and quotes in text fields
+                const escapedQuestion = `"${question.question.replace(/"/g, '""')}"`;
+                const escapedUserAnswer = `"${userAnswer.replace(/"/g, '""')}"`;
+                const escapedCorrectAnswer = `"${correctAnswer.replace(/"/g, '""')}"`;
+                
+                csvContent += `${escapedQuestion},${escapedUserAnswer},${escapedCorrectAnswer},${result}\n`;
+            });
+            
+            // Add summary row
+            csvContent += `\nTotal Score,${score}/${currentQuestions.length},${Math.round((score/currentQuestions.length)*100)}%,`;
+            
+            // Create download link
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "sre_quiz_results.csv");
+            document.body.appendChild(link);
+            
+            // Trigger download and remove link
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // Export results to PDF
+        function exportToPDF() {
+            // Create new jsPDF instance
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            // Set title
+            doc.setFontSize(18);
+            doc.text("SRE Quiz Results", 105, 15, { align: "center" });
+            
+            // Set score summary
+            doc.setFontSize(14);
+            doc.text(`Score: ${score}/${currentQuestions.length} (${Math.round((score/currentQuestions.length)*100)}%)`, 105, 25, { align: "center" });
+            
+            // Line separator
+            doc.line(20, 30, 190, 30);
+            
+            // Add questions and answers
+            doc.setFontSize(12);
+            let yPosition = 40;
+            
+            currentQuestions.forEach((question, index) => {
+                // Check if we need a new page
+                if (yPosition > 270) {
+                    doc.addPage();
+                    yPosition = 20;
+                }
+                
+                const userAnswer = userAnswers[index] !== null ? question.options[userAnswers[index]] : "Not answered";
+                const correctAnswer = question.options[question.answer];
+                const isCorrect = userAnswers[index] === question.answer;
+                
+                // Question
+                doc.setFont(undefined, 'bold');
+                doc.text(`Question ${index + 1}: ${question.question}`, 20, yPosition, { maxWidth: 170 });
+                yPosition += 10;
+                
+                // Answer
+                doc.setFont(undefined, 'normal');
+                doc.text(`Your answer: ${userAnswer}`, 25, yPosition, { maxWidth: 165 });
+                yPosition += 7;
+                
+                doc.text(`Correct answer: ${correctAnswer}`, 25, yPosition, { maxWidth: 165 });
+                yPosition += 7;
+                
+                // Result
+                if (isCorrect) {
+                    doc.setTextColor(46, 204, 113); // Green
+                    doc.text("Correct!", 25, yPosition);
+                } else {
+                    doc.setTextColor(231, 76, 60); // Red
+                    doc.text("Incorrect", 25, yPosition);
+                }
+                doc.setTextColor(0, 0, 0); // Reset to black
+                
+                yPosition += 15;
+            });
+            
+            // Save the PDF
+            doc.save("sre_quiz_results.pdf");
+        }
+
+        // Show review screen
+        function showReview() {
+            document.getElementById('result-container').style.display = 'none';
+            document.getElementById('review-container').style.display = 'block';
+            
+            const reviewQuestionsContainer = document.getElementById('review-questions');
+            reviewQuestionsContainer.innerHTML = '';
+            
+            currentQuestions.forEach((question, index) => {
+                const userAnswer = userAnswers[index];
+                const isCorrect = userAnswer === question.answer;
+                
+                const reviewHTML = `
+                    <div class="review-question">
+                        <h3>Question ${index + 1}</h3>
+                        <p>${question.question}</p>
+                        <p>Your answer: <span class="user-answer ${isCorrect ? 'correct' : 'incorrect'}">${userAnswer !== null ? question.options[userAnswer] : 'Not answered'}</span></p>
+                        <p>Correct answer: <strong>${question.options[question.answer]}</strong></p>
+                        <div class="explanation">
+                            <strong>Explanation:</strong> ${question.explanation}
+                        </div>
+                    </div>
+                `;
+                
+                reviewQuestionsContainer.innerHTML += reviewHTML;
+            });
+        }
+
+        // Back to results
+        function backToResults() {
+            document.getElementById('review-container').style.display = 'none';
+            document.getElementById('result-container').style.display = 'block';
+        }
+
+        // Restart quiz
+        function restartQuiz() {
+            document.getElementById('result-container').style.display = 'none';
+            document.getElementById('welcome-container').style.display = 'block';
+            
+            // Reset state
+            currentQuestionIndex = 0;
+            score = 0;
+            userAnswers = [];
+        }
+
+        // Utility function: Get random questions from array
+        function getRandomQuestions(questionsArray, n) {
+            const shuffled = shuffleArray([...questionsArray]);
+            return shuffled.slice(0, Math.min(n, shuffled.length));
+        }
+
+        // Utility function: Shuffle array (Fisher-Yates algorithm)
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        // Set default difficulty
+        selectDifficulty('all');
+
+        // Quiz questions array - populated with SRE questions of various difficulty levels
+        const quizQuestions = [
+            // Easy Questions (1-40)
+            {
+                question: "What does SRE stand for?",
+                options: [
+                    "System Reliability Engineering",
+                    "Site Reliability Engineering",
+                    "Service Resolution Expert",
+                    "Software Reliability Enhancement"
+                ],
+                answer: 1,
+                difficulty: "easy",
+                explanation: "SRE stands for Site Reliability Engineering, an engineering discipline devoted to helping organizations sustainably achieve the appropriate level of reliability in their systems, services, and products."
+            },
+            {
+                question: "Who is credited with founding the SRE team and when?",
+                options: [
+                    "Jeff Bezos at Amazon in 2006",
+                    "Satya Nadella at Microsoft in 2010",
+                    "Benjamin Treynor Sloss at Google in 2003",
+                    "Mark Zuckerberg at Facebook in 2008"
+                ],
+                answer: 2,
+                difficulty: "easy",
+                explanation: "Site Reliability Engineering originated at Google with Benjamin Treynor Sloss, who founded the SRE team in 2003."
+            },
+            {
+                question: "Which of the following is NOT a key principle of SRE?",
+                options: [
+                    "Embracing risk",
+                    "Eliminating toil",
+                    "Prioritizing manual operations over automation",
+                    "Setting SLOs (Service Level Objectives)"
+                ],
+                answer: 2,
+                difficulty: "easy",
+                explanation: "SRE principles include embracing risk, eliminating toil, and setting SLOs. SRE actually prioritizes automation over manual operations to reduce toil and increase reliability."
+            },
+            {
+                question: "What is 'toil' in the context of SRE?",
+                options: [
+                    "The manual work required to maintain site reliability",
+                    "The process of training new SRE team members",
+                    "The exhaustive documentation required for operational procedures",
+                    "The planning phase of implementing new features"
+                ],
+                answer: 0,
+                difficulty: "easy",
+                explanation: "In SRE, 'toil' refers to the manual, repetitive, automatable work that doesn't provide enduring value and scales linearly as the service grows."
+            },
+            {
+                question: "Which of these is a fundamental SRE practice?",
+                options: [
+                    "Implementing complex solutions for simple problems",
+                    "Using manual processes to ensure quality control",
+                    "Automating repetitive tasks",
+                    "Focusing exclusively on new feature development"
+                ],
+                answer: 2,
+                difficulty: "easy",
+                explanation: "Automating repetitive tasks is a fundamental SRE practice to reduce toil and human error while increasing reliability and efficiency."
+            },
+            {
+                question: "What does SLO stand for in SRE?",
+                options: [
+                    "Service Level Optimization",
+                    "System Load Operation",
+                    "Service Level Objective",
+                    "Site Latency Observation"
+                ],
+                answer: 2,
+                difficulty: "easy",
+                explanation: "SLO stands for Service Level Objective, which is a target value or range of values for a service level that is measured by an SLI (Service Level Indicator)."
+            },
+            {
+                question: "What is an 'error budget' in SRE?",
+                options: [
+                    "A financial allocation for fixing bugs",
+                    "The allowed amount of downtime or errors before reliability is considered compromised",
+                    "The capacity to handle error messages in the system",
+                    "A forecast of expected errors in new code"
+                ],
+                answer: 1,
+                difficulty: "easy",
+                explanation: "An error budget is the allowed amount of downtime or errors a service can experience before reliability is considered compromised. It's calculated as 100% minus the SLO target."
+            },
+            {
+                question: "Which of the following statements best describes the relationship between DevOps and SRE?",
+                options: [
+                    "DevOps and SRE are completely different approaches with no overlap",
+                    "SRE is a specific implementation of DevOps principles",
+                    "DevOps replaced SRE as the industry standard",
+                    "SRE only focuses on development while DevOps focuses on operations"
+                ],
+                answer: 1,
+                difficulty: "easy",
+                explanation: "SRE is considered a specific implementation of DevOps principles, focusing particularly on reliability, availability, and the specific methods to achieve those goals."
+            },
+            {
+                question: "What does SLI stand for in SRE?",
+                options: [
+                    "Service Level Implementation",
+                    "System Latency Index",
+                    "Service Level Indicator",
+                    "Site Load Identifier"
+                ],
+                answer: 2,
+                difficulty: "easy",
+                explanation: "SLI stands for Service Level Indicator, which is a metric used to measure the performance of a service, such as availability, latency, or error rate."
+            },
+            {
+                question: "Which of the following is a recommended SRE practice for incident management?",
+                options: [
+                    "Finding someone to blame for the incident",
+                    "Conducting blameless postmortems",
+                    "Keeping incident details confidential",
+                    "Minimizing documentation to save time"
+                ],
+                answer: 1,
+                difficulty: "easy",
+                explanation: "Conducting blameless postmortems is a recommended SRE practice for incident management. It focuses on learning from failures without assigning blame to individuals."
+            },
+            {
+                question: "What is a key difference between traditional IT operations and SRE?",
+                options: [
+                    "SRE doesn't involve any coding or programming",
+                    "SRE focuses solely on monitoring while IT operations handle deployments",
+                    "SRE applies software engineering principles to operations problems",
+                    "SRE is exclusively for cloud environments while IT operations are for on-premises systems"
+                ],
+                answer: 2,
+                difficulty: "easy",
+                explanation: "A key difference is that SRE applies software engineering principles to operations problems, treating operations as a software problem to be solved through automation and engineering."
+            },
+            {
+                question: "What is the recommended balance between operations and development work for SREs according to Google?",
+                options: [
+                    "25% operations, 75% development",
+                    "50% operations, 50% development",
+                    "75% operations, 25% development",
+                    "90% operations, 10% development"
+                ],
+                answer: 1,
+                difficulty: "easy",
+                explanation: "Google recommends that SREs spend 50% of their time on operations and 50% on development work (like building tools to automate operations tasks)."
+            },
+            {
+                question: "Which is NOT typically a responsibility of SRE teams?",
+                options: [
+                    "Monitoring system health",
+                    "Creating marketing strategies for new products",
+                    "Automating repetitive operational tasks",
+                    "Capacity planning"
+                ],
+                answer: 1,
+                difficulty: "easy",
+                explanation: "Creating marketing strategies is not typically a responsibility of SRE teams. SREs focus on system reliability, monitoring, automation, and capacity planning."
+            },
+            {
+                question: "What is 'observability' in the context of SRE?",
+                options: [
+                    "The ability to visually inspect physical hardware",
+                    "The ability to ask questions about system behavior without knowing ahead of time what to ask",
+                    "The process of observing team members in their daily work",
+                    "A technique for monitoring user behavior"
+                ],
+                answer: 1,
+                difficulty: "easy",
+                explanation: "Observability is the ability to ask questions about system behavior without having to know ahead of time what to ask, by collecting data that can be used to understand the system's internal state."
+            },
+            {
+                question: "Which of these tools would be most useful for an SRE team?",
+                options: [
+                    "Adobe Photoshop",
+                    "Microsoft Word",
+                    "Prometheus monitoring system",
+                    "Social media management platforms"
+                ],
+                answer: 2,
+                difficulty: "easy",
+                explanation: "Prometheus, a monitoring and alerting toolkit, would be most useful for an SRE team as it helps monitor system performance and alert on potential issues."
+            },
+            {
+                question: "What is the primary goal of implementing SRE practices?",
+                options: [
+                    "To reduce costs by cutting IT staff",
+                    "To increase system reliability while enabling innovation",
+                    "To completely eliminate all system failures",
+                    "To replace developers with automation"
+                ],
+                answer: 1,
+                difficulty: "easy",
+                explanation: "The primary goal of SRE is to increase system reliability while still enabling innovation and feature development. It balances reliability with the pace of development."
+            },
+            {
+                question: "Which statement best describes the SRE approach to failure?",
+                options: [
+                    "Failures should never happen and indicate poor engineering",
+                    "Failures are inevitable in complex systems and should be planned for",
+                    "Failures should be hidden from users and management",
+                    "Failures should be immediately fixed without analysis"
+                ],
+                answer: 1,
+                difficulty: "easy",
+                explanation: "SRE acknowledges that failures are inevitable in complex systems and should be planned for. This is part of the 'embrace risk' principle, where systems are designed to be resilient to failures."
+            },
+            {
+                question: "What does SLA stand for in the context of SRE?",
+                options: [
+                    "System Level Architecture",
+                    "Service Level Agreement",
+                    "Site Latency Analysis",
+                    "Software License Application"
+                ],
+                answer: 1,
+                difficulty: "easy",
+                explanation: "SLA stands for Service Level Agreement, a contract that defines the expected level of service between a service provider and customer, often with financial penalties for violations."
+            },
+            {
+                question: "Which of the following best describes the concept of 'Infrastructure as Code'?",
+                options: [
+                    "Writing code on infrastructure hardware",
+                    "Managing and provisioning infrastructure through code rather than manual processes",
+                    "Using infrastructure to write better code",
+                    "Coding in infrastructure-specific languages"
+                ],
+                answer: 1,
+                difficulty: "easy",
+                explanation: "Infrastructure as Code (IaC) is the management and provisioning of infrastructure through code rather than manual processes, enabling automation and consistency."
+            },
+            {
+                question: "What is a key benefit of automation in SRE?",
+                options: [
+                    "It increases job security for operations staff",
+                    "It enables rapid system changes without testing",
+                    "It reduces toil and human error",
+                    "It eliminates the need for monitoring"
+                ],
+                answer: 2,
+                difficulty: "easy",
+                explanation: "A key benefit of automation in SRE is that it reduces toil (manual repetitive work) and human error, leading to more reliable systems and freeing SREs to focus on more valuable work."
+            },
+            {
+                question: "Which of these is NOT a typical SRE metric?",
+                options: [
+                    "Mean Time To Recovery (MTTR)",
+                    "Error Budget consumption",
+                    "Employee satisfaction scores",
+                    "System availability percentage"
+                ],
+                answer: 2,
+                difficulty: "easy",
+                explanation: "While employee satisfaction may be measured in organizations, it is not a typical SRE metric. SRE metrics typically focus on system performance and reliability."
+            },
+            {
+                question: "What is a postmortem in SRE?",
+                options: [
+                    "A medical examination after death",
+                    "A document that analyzes an incident to learn from it",
+                    "The final phase of system shutdown",
+                    "A review conducted after an employee leaves"
+                ],
+                answer: 1,
+                difficulty: "easy",
+                explanation: "In SRE, a postmortem is a document that analyzes an incident after it occurs to understand what happened, why it happened, and how to prevent similar incidents in the future."
+            },
+            {
+                question: "What is 'Chaos Engineering' in the context of SRE?",
+                options: [
+                    "Deliberately introducing failures to test system resilience",
+                    "Allowing engineers to work without structure or process",
+                    "Writing code without documentation",
+                    "A management style that encourages conflict"
+                ],
+                answer: 0,
+                difficulty: "easy",
+                explanation: "Chaos Engineering is the practice of deliberately introducing failures into a system to test its resilience and identify weaknesses before they cause real outages."
+            },
+            {
+                question: "What is the 'SRE Golden Signals' monitoring approach?",
+                options: [
+                    "Monitoring gold prices to predict system performance",
+                    "A set of four key metrics: latency, traffic, errors, and saturation",
+                    "Using gold-standard hardware for all services",
+                    "A notification system using yellow and red alerts"
+                ],
+                answer: 1,
+                difficulty: "easy",
+                explanation: "The SRE Golden Signals is a monitoring approach defined by Google that focuses on four key metrics: latency, traffic, errors, and saturation."
+            },
+            {
+                question: "Which of these would be considered 'toil' that an SRE team should try to automate?",
+                options: [
+                    "Designing a new monitoring system",
+                    "Running the same manual deployment steps every week",
+                    "Conducting an incident retrospective",
+                    "Architecting a more reliable system"
+                ],
+                answer: 1,
+                difficulty: "easy",
+                explanation: "Running the same manual deployment steps every week would be considered toil - it's repetitive, manual work that could be automated to free up human time for more valuable tasks."
+            },
+            {
+                question: "What is a key practice in SRE for managing service reliability?",
+                options: [
+                    "Setting unrealistically high reliability targets",
+                    "Focusing on 100% availability for all services",
+                    "Setting appropriate SLOs based on user needs",
+                    "Manually monitoring all systems 24/7"
+                ],
+                answer: 2,
+                difficulty: "easy",
+                explanation: "A key practice is setting appropriate SLOs based on actual user needs rather than aiming for perfect reliability for all services, which can be unnecessarily costly and limit innovation."
+            },
+            {
+                question: "Which of the following is an example of an SLI?",
+                options: [
+                    "A contract promising 99.9% uptime",
+                    "The percentage of requests that return a successful response",
+                    "A goal of 99.95% availability over a quarter",
+                    "A plan to improve system performance"
+                ],
+                answer: 1,
+                difficulty: "easy",
+                explanation: "The percentage of requests that return a successful response is an example of an SLI (Service Level Indicator), which is a measurement of a specific aspect of service performance."
+            },
+            {
+                question: "What is 'rollback' in the context of SRE deployments?",
+                options: [
+                    "A technique for load testing",
+                    "Returning to a previous working version when a deployment causes problems",
+                    "A celebratory team activity after a successful deployment",
+                    "Rolling out new features gradually"
+                ],
+                answer: 1,
+                difficulty: "easy",
+                explanation: "Rollback is the practice of returning to a previous working version when a deployment causes problems, a key safety mechanism for maintaining system reliability."
+            },
+            {
+                question: "What is a microservice architecture?",
+                options: [
+                    "Very small physical servers",
+                    "An architectural style that structures an application as a collection of loosely coupled services",
+                    "A design pattern for miniaturizing code",
+                    "A system that only serves minimal content"
+                ],
+                answer: 1,
+                difficulty: "easy",
+                explanation: "A microservice architecture is an architectural style that structures an application as a collection of loosely coupled services, each implementing a specific business capability."
+            },
+            {
+                question: "Which cloud provider offers the service 'CloudWatch' that is useful for SRE monitoring?",
+                options: [
+                    "Google Cloud Platform",
+                    "Microsoft Azure",
+                    "Amazon Web Services (AWS)",
+                    "IBM Cloud"
+                ],
+                answer: 2,
+                difficulty: "easy",
+                explanation: "Amazon Web Services (AWS) offers CloudWatch, a monitoring and observability service that provides data and actionable insights for AWS resources and applications."
+            },
+            {
+                question: "What is a 'runbook' in SRE?",
+                options: [
+                    "A journal for tracking daily tasks",
+                    "A documented procedure for routine operations or handling specific scenarios",
+                    "A record of all system failures",
+                    "A tool for scheduling automated jobs"
+                ],
+                answer: 1,
+                difficulty: "easy",
+                explanation: "A runbook is a documented procedure for routine operations or handling specific scenarios, providing step-by-step instructions for operational tasks."
+            },
+            {
+                question: "What is 'canary deployment' in the context of SRE?",
+                options: [
+                    "Using birds to test air quality in server rooms",
+                    "A technique where changes are gradually rolled out to a small subset of users before full deployment",
+                    "A way to mark important servers with yellow labels",
+                    "A deployment that happens early in the morning"
+                ],
+                answer: 1,
+                difficulty: "easy",
+                explanation: "Canary deployment is a technique where changes are gradually rolled out to a small subset of users or servers before deploying to the entire infrastructure, allowing for early detection of issues."
+            },
+            {
+                question: "What is the primary purpose of load testing in SRE?",
+                options: [
+                    "To test how much physical weight servers can hold",
+                    "To determine how a system performs under expected and peak load conditions",
+                    "To determine how many employees are needed for operations",
+                    "To test loading times for web pages only"
+                ],
+                answer: 1,
+                difficulty: "easy",
+                explanation: "The primary purpose of load testing is to determine how a system performs under expected and peak load conditions, helping identify bottlenecks and capacity limits."
+            },
+            {
+                question: "Which of these is a common SRE approach to monitoring?",
+                options: [
+                    "Only monitoring when problems are reported",
+                    "Having humans constantly watch dashboards 24/7",
+                    "Setting up automated alerts based on thresholds",
+                    "Collecting as much data as possible without analysis"
+                ],
+                answer: 2,
+                difficulty: "easy",
+                explanation: "Setting up automated alerts based on thresholds is a common SRE approach to monitoring, allowing teams to be notified of potential issues without constant human surveillance."
+            },
+            {
+                question: "What is a key difference between monitoring and observability?",
+                options: [
+                    "Monitoring is digital while observability is analog",
+                    "Monitoring tells you when something is wrong; observability helps you understand why",
+                    "Monitoring is automatic while observability requires manual work",
+                    "Monitoring is for internal use while observability is for customers"
+                ],
+                answer: 1,
+                difficulty: "easy",
+                explanation: "A key difference is that monitoring tells you when something is wrong (based on known metrics), while observability helps you understand why by providing insights into internal system state."
+            },
+            {
+                question: "What is 'capacity planning' in SRE?",
+                options: [
+                    "Planning the physical layout of server rooms",
+                    "Forecasting future resource needs based on growth trends",
+                    "Scheduling team capacity for on-call rotations",
+                    "Setting limits on how much storage users can use"
+                ],
+                answer: 1,
+                difficulty: "easy",
+                explanation: "Capacity planning is the process of forecasting future resource needs based on growth trends and usage patterns to ensure adequate infrastructure is available when needed."
+            },
+            {
+                question: "What is the concept of 'defense in depth' in system reliability?",
+                options: [
+                    "Having physical security at multiple building entry points",
+                    "Using multiple layers of security and reliability measures",
+                    "Maintaining a deep knowledge of defensive programming",
+                    "Keeping backup systems in physically deep locations"
+                ],
+                answer: 1,
+                difficulty: "easy",
+                explanation: "Defense in depth is the practice of using multiple layers of security and reliability measures so that if one layer fails, others are still in place to protect the system."
+            },
+            {
+                question: "Which of these activities would an SRE team typically NOT be responsible for?",
+                options: [
+                    "Automating deployment processes",
+                    "Setting up monitoring and alerting",
+                    "Developing user interface designs",
+                    "Capacity planning"
+                ],
+                answer: 2,
+                difficulty: "easy",
+                explanation: "Developing user interface designs would typically not be an SRE responsibility. SRE teams focus on system reliability, infrastructure, and operations rather than product design."
+            },
+            {
+                question: "What is 'continuous integration' in software development?",
+                options: [
+                    "The practice of always being integrated with social media",
+                    "The practice of merging all developers' working copies to a shared mainline frequently",
+                    "Continuously integrating new hardware into systems",
+                    "The process of integrating customer feedback continuously"
+                ],
+                answer: 1,
+                difficulty: "easy",
+                explanation: "Continuous integration is the practice of frequently merging all developers' working copies to a shared mainline, typically with automated testing to catch integration issues early."
+            },
+            // Medium Questions (41-80)
+            {
+                question: "How do error budgets work in SRE?",
+                options: [
+                    "They set a limit on how many bugs developers can introduce",
+                    "They represent the difference between 100% reliability and the SLO, allowing for calculated risk-taking",
+                    "They allocate financial resources for fixing errors",
+                    "They track how many errors users report each month"
+                ],
+                answer: 1,
+                difficulty: "medium",
+                explanation: "Error budgets represent the allowed unreliability of a service (the difference between 100% and the SLO). When the budget is consumed, development typically focuses on reliability rather than new features."
+            },
+            {
+                question: "What is the relationship between SLIs, SLOs, and SLAs?",
+                options: [
+                    "They are different terms for the same concept used by different companies",
+                    "SLIs measure performance, SLOs are targets for SLIs, and SLAs are contractual obligations based on SLOs",
+                    "SLIs are for internal teams, SLOs for managers, and SLAs for executives",
+                    "SLIs are set first, then relaxed to create SLOs, and further relaxed to create SLAs"
+                ],
+                answer: 1,
+                difficulty: "medium",
+                explanation: "SLIs (Service Level Indicators) are metrics that measure service performance; SLOs (Service Level Objectives) are targets for these metrics; and SLAs (Service Level Agreements) are contractual obligations often based on SLOs, usually with consequences for violations."
+            },
+            {
+                question: "Why does SRE recommend setting SLOs below 100%?",
+                options: [
+                    "Because it's technically impossible to achieve 100% reliability",
+                    "To save costs on unnecessary reliability engineering",
+                    "Because attempting to achieve 100% reliability creates diminishing returns and constrains innovation",
+                    "To keep expectations low so they're easier to meet"
+                ],
+                answer: 2,
+                difficulty: "medium",
+                explanation: "SRE recommends setting SLOs below 100% because attempting to achieve 100% reliability creates diminishing returns (becoming exponentially more costly and complex) and constrains innovation by discouraging change."
+            },
+            {
+                question: "What is the concept of 'non-abstract large system design' in SRE?",
+                options: [
+                    "Creating concrete architectural plans for specific large-scale systems",
+                    "Using metaphors to describe system architecture",
+                    "Designing systems that avoid abstractions",
+                    "A method for reducing system complexity"
+                ],
+                answer: 0,
+                difficulty: "medium",
+                explanation: "Non-abstract large system design (NALSD) is the practice of creating concrete architectural plans for specific large-scale systems, considering real-world constraints and requirements rather than theoretical or abstract models."
+            },
+            {
+                question: "In SRE practice, what is the significance of 'reducing MTTR'?",
+                options: [
+                    "Making maintenance tasks require less total time",
+                    "Decreasing Mean Time To Recovery - how quickly service is restored after a failure",
+                    "Minimizing the time spent in team review meetings",
+                    "Reducing the time required for routine tasks"
+                ],
+                answer: 1,
+                difficulty: "medium",
+                explanation: "MTTR stands for Mean Time To Recovery (or Repair/Restore). Reducing MTTR is significant because it directly impacts service availability by minimizing downtime when failures occur."
+            },
+            {
+                question: "How does the concept of 'Service Level Objectives' (SLOs) differ from 'Service Level Agreements' (SLAs) in SRE?",
+                options: [
+                    "SLOs are measured in percentages while SLAs use absolute values",
+                    "SLOs are internal targets while SLAs involve contractual obligations with external parties",
+                    "SLOs apply to software while SLAs apply to hardware",
+                    "SLOs are for reliability while SLAs are for performance"
+                ],
+                answer: 1,
+                difficulty: "medium",
+                explanation: "SLOs are internal reliability targets that teams set for their services, while SLAs are contractual agreements with external parties (customers) that often include consequences (like financial penalties) for violations."
+            },
+            {
+                question: "What is 'Mean Time Between Failures' (MTBF) and why is it important in SRE?",
+                options: [
+                    "The average time a system runs before failing; important for predicting and preventing outages",
+                    "The maximum time allowed for fixing bugs; important for setting deadlines",
+                    "The minimum time between feature releases; important for managing change",
+                    "The median time users spend on a site; important for user experience"
+                ],
+                answer: 0,
+                difficulty: "medium",
+                explanation: "MTBF is the average time a system runs before experiencing a failure. It's important in SRE for understanding system reliability, predicting future failures, and guiding maintenance schedules."
+            },
+            {
+                question: "What is the purpose of keeping 'service level indicators' (SLIs) simple in SRE?",
+                options: [
+                    "To make them easy to explain to executives",
+                    "To reduce the cost of monitoring",
+                    "To ensure they clearly reflect the user experience and are actionable",
+                    "To minimize the number of alerts generated"
+                ],
+                answer: 2,
+                difficulty: "medium",
+                explanation: "SLIs should be kept simple to ensure they clearly reflect actual user experience and are actionable. Complex SLIs can obscure real issues and make it difficult to determine appropriate responses."
+            },
+            {
+                question: "In the context of SRE, what is a 'dark launch'?",
+                options: [
+                    "Releasing a feature at night when fewer users are active",
+                    "Rolling out a feature without announcing it publicly",
+                    "Deploying new code to production servers but not routing user traffic to it",
+                    "A failed deployment that needs to be rolled back"
+                ],
+                answer: 2,
+                difficulty: "medium",
+                explanation: "A dark launch involves deploying new code to production servers but not routing user traffic to it, allowing testing in the production environment without impacting users."
+            },
+            {
+                question: "What is the 'Wheel of Misfortune' exercise in Google's SRE practice?",
+                options: [
+                    "A game used to randomly assign blame for outages",
+                    "A simulation training exercise where engineers practice responding to fictional outage scenarios",
+                    "A tool for visualizing different types of system failures",
+                    "A method for tracking recurring problems in systems"
+                ],
+                answer: 1,
+                difficulty: "medium",
+                explanation: "The Wheel of Misfortune is a simulation training exercise where engineers practice responding to fictional outage scenarios, helping them prepare for real incidents in a safe environment."
+            },
+            {
+                question: "What is the concept of 'risk tolerance' in SRE?",
+                options: [
+                    "The ability of SREs to tolerate stress during outages",
+                    "How much technical debt a system can handle before failing",
+                    "The amount of risk a service can take on before implementing additional reliability measures",
+                    "A framework for determining acceptable levels of service risk based on business needs"
+                ],
+                answer: 3,
+                difficulty: "medium",
+                explanation: "Risk tolerance in SRE is a framework for determining acceptable levels of service risk based on business needs, considering factors like the impact of failures and the cost of prevention."
+            },
+            {
+                question: "What technique does the 'traffic shifting' deployment strategy use to increase reliability?",
+                options: [
+                    "Reducing overall traffic during deployments",
+                    "Gradually shifting traffic from old to new versions to limit potential impact",
+                    "Moving traffic between data centers for load balancing",
+                    "Prioritizing traffic based on user importance"
+                ],
+                answer: 1,
+                difficulty: "medium",
+                explanation: "Traffic shifting (like canary or blue-green deployments) gradually moves traffic from old to new versions, limiting the potential impact of issues and allowing for easier rollbacks if problems are detected."
+            },
+            {
+                question: "What are the four 'Golden Signals' for monitoring according to Google's SRE practices?",
+                options: [
+                    "Availability, Durability, Security, Scalability",
+                    "CPU, Memory, Disk, Network",
+                    "Latency, Traffic, Errors, Saturation",
+                    "Requests, Responses, Latency, Failures"
+                ],
+                answer: 2,
+                difficulty: "medium",
+                explanation: "The four Golden Signals for monitoring in Google's SRE practices are Latency (response time), Traffic (demand), Errors (failure rate), and Saturation (how 'full' the service is)."
+            },
+            {
+                question: "What is a key principle of 'blameless postmortems' in SRE culture?",
+                options: [
+                    "Identifying which individual made the mistake that caused an incident",
+                    "Focusing on systemic issues rather than individual actions",
+                    "Assigning responsibility without repercussions",
+                    "Limiting the distribution of postmortem documents"
+                ],
+                answer: 1,
+                difficulty: "medium",
+                explanation: "A key principle of blameless postmortems is focusing on identifying and addressing systemic issues rather than blaming individuals, recognizing that humans make mistakes and systems should be designed to be resilient to these mistakes."
+            },
+            {
+                question: "Which of the following best describes the concept of 'antifragility' in relation to SRE?",
+                options: [
+                    "Building systems that never break under any circumstances",
+                    "Creating systems that gain strength from disorder and stress",
+                    "Designing components that are physically robust",
+                    "Implementing security measures to prevent attacks"
+                ],
+                answer: 1,
+                difficulty: "medium",
+                explanation: "Antifragility describes systems that actually improve and grow stronger when exposed to stressors, volatility, and failure—beyond just being resilient or robust. In SRE, practices like chaos engineering contribute to antifragility."
+            },
+            {
+                question: "What is the purpose of 'disaster recovery testing' in SRE?",
+                options: [
+                    "To satisfy compliance requirements only",
+                    "To verify that recovery procedures work as expected before a real disaster",
+                    "To train new employees on emergency procedures",
+                    "To identify which disasters are most likely to occur"
+                ],
+                answer: 1,
+                difficulty: "medium",
+                explanation: "The purpose of disaster recovery testing is to verify that recovery procedures work as expected before a real disaster occurs, ensuring that teams can restore service effectively when needed."
+            },
+            {
+                question: "What is 'technical debt' in the context of system reliability?",
+                options: [
+                    "The financial cost of running technical infrastructure",
+                    "The accumulated result of prioritizing short-term solutions over long-term system health",
+                    "The learning curve required to understand complex systems",
+                    "The time delay between code deployment and system failures"
+                ],
+                answer: 1,
+                difficulty: "medium",
+                explanation: "Technical debt refers to the accumulated result of prioritizing short-term solutions over long-term system health, often leading to future reliability issues that require additional work to resolve."
+            },
+            {
+                question: "What is the concept of 'blast radius' in SRE deployment strategies?",
+                options: [
+                    "The physical area affected by hardware failures",
+                    "The scope of impact if a deployed change causes problems",
+                    "The zone of destruction in a disaster recovery scenario",
+                    "The number of servers that need to be upgraded simultaneously"
+                ],
+                answer: 1,
+                difficulty: "medium",
+                explanation: "Blast radius refers to the scope of potential impact if a deployed change causes problems. SRE practices aim to minimize this blast radius through techniques like gradual rollouts and canary deployments."
+            },
+            {
+                question: "What is 'service ownership' in the context of SRE?",
+                options: [
+                    "The concept that the operations team owns all services",
+                    "The financial responsibility for service costs",
+                    "The assignment of specific services to executives",
+                    "The principle that development teams are responsible for the reliability of their services"
+                ],
+                answer: 3,
+                difficulty: "medium",
+                explanation: "Service ownership is the principle that development teams are ultimately responsible for the reliability and operation of their services, even when SRE teams help with operational aspects."
+            },
+            {
+                question: "What is the purpose of implementing 'circuit breakers' in distributed systems?",
+                options: [
+                    "To cut off power to failing servers",
+                    "To prevent the spread of failures across system components",
+                    "To reset systems automatically after crashes",
+                    "To break large systems into smaller microservices"
+                ],
+                answer: 1,
+                difficulty: "medium",
+                explanation: "Circuit breakers in distributed systems prevent the spread of failures by detecting when a service is failing and temporarily stopping requests to it, allowing it to recover and preventing cascading failures."
+            },
+            {
+                question: "What is 'capacity planning' in SRE and why is it important?",
+                options: [
+                    "Planning team size; important for budgeting",
+                    "Forecasting future resource needs; important for preventing outages and controlling costs",
+                    "Scheduling datacenter space; important for hardware logistics",
+                    "Planning software capability; important for feature roadmaps"
+                ],
+                answer: 1,
+                difficulty: "medium",
+                explanation: "Capacity planning is forecasting future resource needs based on growth projections. It's important for preventing outages due to resource exhaustion and for controlling costs by avoiding over-provisioning."
+            },
+            {
+                question: "In SRE practice, what does 'canarying' refer to?",
+                options: [
+                    "Using sentinel monitoring agents in systems",
+                    "Gradually rolling out changes to a small subset of users or servers first",
+                    "Testing in an isolated 'cage' environment",
+                    "Marking legacy systems that need replacement"
+                ],
+                answer: 1,
+                difficulty: "medium",
+                explanation: "Canarying refers to gradually rolling out changes to a small subset of users or servers first to detect potential issues before affecting the entire system or user base."
+            },
+            {
+                question: "What is the purpose of 'chaos engineering' in improving system reliability?",
+                options: [
+                    "Introducing random code changes to test development flexibility",
+                    "Proactively testing how systems respond to failure by deliberately causing failures",
+                    "Creating unpredictable work schedules to test team adaptability",
+                    "Randomly changing system configurations to find optimal settings"
+                ],
+                answer: 1,
+                difficulty: "medium",
+                explanation: "Chaos engineering involves proactively testing how systems respond to failure conditions by deliberately introducing controlled failures, helping identify weaknesses before they cause real outages."
+            },
+            {
+                question: "What is the concept of 'designing for failure' in SRE?",
+                options: [
+                    "Creating systems that are expected to fail frequently",
+                    "Building systems that can continue functioning even when components fail",
+                    "Designing failure notification systems",
+                    "Planning for system retirement from the beginning"
+                ],
+                answer: 1,
+                difficulty: "medium",
+                explanation: "Designing for failure means building systems that can continue functioning even when components fail, assuming that failures will happen and designing resilience into the system architecture."
+            },
+            {
+                question: "What is the difference between 'high availability' and 'disaster recovery'?",
+                options: [
+                    "High availability is for software; disaster recovery is for hardware",
+                    "High availability is automated; disaster recovery is manual",
+                    "High availability aims to prevent downtime; disaster recovery helps recover after significant downtime has occurred",
+                    "High availability is a technical concern; disaster recovery is a business concern"
+                ],
+                answer: 2,
+                difficulty: "medium",
+                explanation: "High availability focuses on preventing downtime through redundancy and automatic failover, while disaster recovery involves processes to recover services after significant downtime has already occurred due to major failures or disasters."
+            },
+            {
+                question: "What is the 'pets versus cattle' analogy in infrastructure management?",
+                options: [
+                    "Pets are development environments; cattle are production",
+                    "Pets are critical systems; cattle are non-critical",
+                    "Pets are individually managed, named servers; cattle are treated as identical, replaceable resources",
+                    "Pets are physical servers; cattle are virtual machines"
+                ],
+                answer: 2,
+                difficulty: "medium",
+                explanation: "The 'pets versus cattle' analogy distinguishes between individually managed, named servers (pets) that are cared for when sick, and identical, replaceable servers (cattle) that are simply replaced when they fail."
+            },
+            {
+                question: "What does 'blue-green deployment' refer to in SRE practice?",
+                options: [
+                    "Deploying to different colored server racks for redundancy",
+                    "Maintaining two identical production environments, only one of which serves traffic at a time",
+                    "Deploying different code versions based on environmental impact",
+                    "Using colored labels to track deployment status"
+                ],
+                answer: 1,
+                difficulty: "medium",
+                explanation: "Blue-green deployment is a technique where two identical production environments (blue and green) are maintained, with only one serving traffic at a time, allowing for zero-downtime deployments and easy rollbacks."
+            },
+            {
+                question: "What is a 'nine' in the context of system availability?",
+                options: [
+                    "A perfect score in availability testing",
+                    "A digit in the availability percentage (e.g., 99.9% = 'three nines')",
+                    "The number of backup systems required",
+                    "A rating on a scale of 1-10 for system reliability"
+                ],
+                answer: 1,
+                difficulty: "medium",
+                explanation: "A 'nine' refers to a digit in the availability percentage. For example, 99.9% availability is referred to as 'three nines' and represents about 8.8 hours of downtime per year."
+            },
+            {
+                question: "What is 'SRE team topology' referring to?",
+                options: [
+                    "The physical location of SRE team members",
+                    "How SRE teams are structured and interact with development teams",
+                    "The network architecture managed by SRE",
+                    "The geographical distribution of services"
+                ],
+                answer: 1,
+                difficulty: "medium",
+                explanation: "SRE team topology refers to how SRE teams are structured and how they interact with development teams, such as embedded models, consulting models, or platform models."
+            },
+            {
+                question: "What is the meaning of 'shifting left' in the context of SRE?",
+                options: [
+                    "Moving servers to the left side of the data center",
+                    "Incorporating reliability considerations earlier in the software development lifecycle",
+                    "Delegating more tasks to junior team members",
+                    "Focusing on left-side metrics in dashboards"
+                ],
+                answer: 1,
+                difficulty: "medium",
+                explanation: "Shifting left means incorporating reliability considerations earlier in the software development lifecycle (the 'left' side of a timeline), addressing potential issues during design and development rather than after deployment."
+            },
+            {
+                question: "What is 'alert fatigue' and why is it a concern in SRE?",
+                options: [
+                    "Being physically tired from responding to too many alerts",
+                    "When monitoring systems become overwhelmed and stop sending alerts",
+                    "When teams become desensitized to alerts due to high volume or false positives",
+                    "When alerts take too long to reach on-call personnel"
+                ],
+                answer: 2,
+                difficulty: "medium",
+                explanation: "Alert fatigue occurs when teams become desensitized to alerts due to high volume or false positives, potentially causing them to miss critical alerts. It's a concern because it undermines the effectiveness of monitoring systems."
+            },
+            {
+                question: "What is the primary goal of 'progressive delivery' in SRE?",
+                options: [
+                    "To deliver more features in each release",
+                    "To deliver features to premium users first",
+                    "To reduce risk by releasing changes to small portions of users before wide deployment",
+                    "To ensure all users receive updates at the same time"
+                ],
+                answer: 2,
+                difficulty: "medium",
+                explanation: "The primary goal of progressive delivery is to reduce risk by releasing changes to small portions of users before wider deployment, allowing issues to be detected and addressed with minimal impact."
+            },
+            {
+                question: "What does 'immutable infrastructure' mean in the context of SRE?",
+                options: [
+                    "Infrastructure that cannot be changed once deployed",
+                    "Infrastructure that is replaced rather than modified when changes are needed",
+                    "Physical hardware that doesn't wear out",
+                    "Infrastructure that doesn't require monitoring"
+                ],
+                answer: 1,
+                difficulty: "medium",
+                explanation: "Immutable infrastructure means infrastructure components are replaced rather than modified when changes are needed, promoting consistency, reliability, and easier rollbacks."
+            },
+            {
+                question: "What is a key difference between monitoring and observability?",
+                options: [
+                    "Monitoring is manual while observability is automated",
+                    "Monitoring is for production while observability is for development",
+                    "Monitoring tells you what's wrong while observability helps you find out why",
+                    "Monitoring is older technology while observability is newer"
+                ],
+                answer: 2,
+                difficulty: "medium",
+                explanation: "A key difference is that monitoring tells you what's wrong based on predefined metrics, while observability provides the context and data needed to understand why something is wrong, even for unanticipated failure modes."
+            },
+            {
+                question: "What does MTTF stand for in reliability engineering?",
+                options: [
+                    "Maximum Time To Failure",
+                    "Mean Time To Fix",
+                    "Mean Time To Failure",
+                    "Minimum Time To Function"
+                ],
+                answer: 2,
+                difficulty: "medium",
+                explanation: "MTTF stands for Mean Time To Failure, which is the average time expected until a non-repairable component fails. It's a key metric for understanding component reliability."
+            },
+            {
+                question: "What is 'fault isolation' in the context of system reliability?",
+                options: [
+                    "Identifying which team is at fault for an outage",
+                    "Containing failures to prevent them from cascading through the system",
+                    "Moving faulty components to a separate environment",
+                    "The practice of ignoring minor faults"
+                ],
+                answer: 1,
+                difficulty: "medium",
+                explanation: "Fault isolation is the practice of containing failures to prevent them from cascading through the system, often through techniques like circuit breakers, bulkheads, and compartmentalization."
+            },
+            {
+                question: "What is the concept of 'durability' in data storage?",
+                options: [
+                    "How long storage hardware physically lasts",
+                    "The ability to access data quickly",
+                    "The probability that data will not be lost or corrupted",
+                    "The cost-effectiveness of the storage solution"
+                ],
+                answer: 2,
+                difficulty: "medium",
+                explanation: "Durability in data storage refers to the probability that data will not be lost or corrupted over time, often expressed as a percentage (e.g., 99.999999999% durability for some cloud storage services)."
+            },
+            {
+                question: "What is 'observability' in modern systems?",
+                options: [
+                    "The ability to physically see server hardware",
+                    "A measure of how well users can observe system functionality",
+                    "The ability to understand a system's internal state based on its external outputs",
+                    "The transparency of system architecture documentation"
+                ],
+                answer: 2,
+                difficulty: "medium",
+                explanation: "Observability is the ability to understand a system's internal state based on its external outputs (logs, metrics, traces), allowing engineers to ask new questions about system behavior without adding new instrumentation."
+            },
+            {
+                question: "How does 'correlation' help in incident management?",
+                options: [
+                    "It helps correlate incidents with responsible teams",
+                    "It correlates customer complaints with actual issues",
+                    "It helps identify relationships between seemingly unrelated events or alerts",
+                    "It correlates incident frequency with time of day"
+                ],
+                answer: 2,
+                difficulty: "medium",
+                explanation: "Correlation in incident management helps identify relationships between seemingly unrelated events or alerts, making it easier to determine the root cause of complex incidents that trigger multiple alerts."
+            },
+            // Hard Questions (81-100)
+            {
+                question: "How does the concept of 'error budget' change incentives between development and operations in an organization?",
+                options: [
+                    "It creates a zero-sum game where either development or operations must 'win'",
+                    "It eliminates the need for communication between teams",
+                    "It provides a shared framework for balancing reliability and innovation with objective measures",
+                    "It transfers all reliability responsibility to the operations team"
+                ],
+                answer: 2,
+                difficulty: "hard",
+                explanation: "Error budgets provide a shared framework for balancing reliability and innovation, aligning incentives by giving development teams freedom to innovate when reliability targets are met, and focusing on reliability when they aren't."
+            },
+            {
+                question: "What is the relationship between 'fault tolerance', 'high availability', and 'disaster recovery' in SRE?",
+                options: [
+                    "They are synonyms referring to the same concept",
+                    "Fault tolerance enables high availability, while disaster recovery addresses larger-scale failures beyond what fault tolerance can handle",
+                    "Fault tolerance is for hardware, high availability is for software, and disaster recovery is for data",
+                    "Fault tolerance is a design goal, while high availability and disaster recovery are implementation approaches"
+                ],
+                answer: 1,
+                difficulty: "hard",
+                explanation: "Fault tolerance (the ability to operate through component failures) enables high availability (minimal downtime), while disaster recovery addresses larger-scale failures beyond what fault tolerance mechanisms can handle."
+            },
+            {
+                question: "In 'Chaos Engineering', what is the concept of the 'blast radius' and how is it managed?",
+                options: [
+                    "The physical area affected by a hardware failure; managed through physical separation",
+                    "The scope of potential impact of an experiment; managed by starting small and gradually increasing scope",
+                    "The number of alerts generated; managed through alert tuning",
+                    "The metrics affected by an outage; managed through dashboard design"
+                ],
+                answer: 1,
+                difficulty: "hard",
+                explanation: "In Chaos Engineering, the blast radius is the scope of potential impact of an experiment. It's managed by starting small (affecting few users or components) and gradually increasing scope as confidence grows in the system's resilience."
+            },
+            {
+                question: "How does the implementation of SRE differ between microservices architecture and monolithic architecture?",
+                options: [
+                    "SRE principles only apply to microservices architectures",
+                    "In microservices, SRE focuses on individual service reliability and inter-service dependencies, while in monoliths, it focuses on overall application reliability and resource scaling",
+                    "SRE for monoliths requires more people than for microservices",
+                    "Microservices require manual SRE processes while monoliths can be fully automated"
+                ],
+                answer: 1,
+                difficulty: "hard",
+                explanation: "In microservices, SRE focuses on individual service reliability, inter-service dependencies, and distributed system challenges. In monoliths, it focuses more on overall application reliability, resource scaling, and deployment strategies for the single codebase."
+            },
+            {
+                question: "What is 'load shedding' in system reliability and when is it appropriate to implement?",
+                options: [
+                    "The process of removing unnecessary code; appropriate during performance optimization",
+                    "Temporarily reducing functionality to maintain core services during extreme load; appropriate when system is at risk of total failure",
+                    "Distributing load across multiple servers; appropriate for normal scaling",
+                    "Shutting down systems during maintenance; appropriate during planned downtime"
+                ],
+                answer: 1,
+                difficulty: "hard",
+                explanation: "Load shedding is temporarily reducing functionality or rejecting some requests to maintain core services during extreme load. It's appropriate when a system is at risk of total failure due to overload, preserving partial functionality instead of complete failure."
+            },
+            {
+                question: "What is 'coordinated omission' in the context of system performance measurement and why is it problematic?",
+                options: [
+                    "When teams deliberately omit certain metrics from reports; problematic for transparency",
+                    "When high-latency requests aren't properly represented in measurements because measurement code waits for responses; problematic because it underestimates actual system latency",
+                    "When multiple teams omit the same information from documentation; problematic for troubleshooting",
+                    "When monitoring systems omit data during high load; problematic for incident investigation"
+                ],
+                answer: 1,
+                difficulty: "hard",
+                explanation: "Coordinated omission occurs when high-latency requests aren't properly represented in measurements because measurement code waits for responses before sending new requests. This is problematic because it significantly underestimates actual system latency experienced by users."
+            },
+            {
+                question: "How do 'tail latency' and 'head latency' differ, and why is tail latency particularly important in distributed systems?",
+                options: [
+                    "Head latency affects the beginning of requests, tail latency the end; tail latency matters because it's what users notice",
+                    "Head latency is the fastest response time, tail latency is the slowest; tail latency matters because it affects user experience for some users",
+                    "Head latency is average performance, tail latency represents the worst performing percentiles; tail latency matters because in distributed systems it often dominates overall performance",
+                    "Head latency is for read operations, tail latency for write operations; tail latency matters for data consistency"
+                ],
+                answer: 2,
+                difficulty: "hard",
+                explanation: "Head latency refers to common-case (median) performance, while tail latency represents the worst-performing percentiles (e.g., 95th, 99th). Tail latency is particularly important in distributed systems because requests often need multiple components to respond, causing overall performance to be dominated by the slowest components."
+            },
+            {
+                question: "What is the concept of 'reliability insurance' in SRE and how does it relate to SLOs?",
+                options: [
+                    "A financial product that companies can purchase to offset the cost of outages",
+                    "Running backup systems that only activate during failures",
+                    "Extra capacity or redundancy beyond what's needed for normal operations to handle unexpected events",
+                    "Contractual guarantees provided to customers"
+                ],
+                answer: 2,
+                difficulty: "hard",
+                explanation: "Reliability insurance refers to extra capacity or redundancy beyond what's needed for normal operations to handle unexpected events. It relates to SLOs by providing a buffer that helps ensure SLOs can be met even during unexpected circumstances."
+            },
+            {
+                question: "What is the 'multi-armed bandit problem' and how does it relate to deployment strategies in SRE?",
+                options: [
+                    "A security issue where multiple attackers target a system; relates to securing deployments",
+                    "A resource allocation problem of balancing exploration vs. exploitation; relates to strategies like canary deployments and A/B testing",
+                    "The challenge of managing multiple deployment pipelines; relates to CI/CD practices",
+                    "A scenario where multiple teams compete for resources; relates to capacity planning"
+                ],
+                answer: 1,
+                difficulty: "hard",
+                explanation: "The multi-armed bandit problem is a resource allocation problem of balancing exploration (trying new options) vs. exploitation (using known good options). It relates to deployment strategies like canary deployments and A/B testing, where there's a need to balance testing new versions with using proven ones."
+            },
+            {
+                question: "In the context of SRE, what is 'control theory' and how is it applied?",
+                options: [
+                    "The study of management techniques; applied through team leadership",
+                    "The mathematical study of dynamical systems with inputs and how their behavior is modified by feedback; applied in areas like autoscaling and rate limiting",
+                    "A framework for determining who has control over production changes; applied through access controls",
+                    "The theory that everything in a system can be controlled; applied through monitoring"
+                ],
+                answer: 1,
+                difficulty: "hard",
+                explanation: "Control theory is the mathematical study of dynamical systems with inputs and how their behavior is modified by feedback. In SRE, it's applied to design stable systems like autoscaling, rate limiting, and load balancing algorithms that respond appropriately to changing conditions."
+            },
+            {
+                question: "What is a 'Dickerson pyramid' in SRE and how is it used?",
+                options: [
+                    "A visualization of system dependencies; used for troubleshooting",
+                    "A hierarchy of reliability needs; used to prioritize improvements",
+                    "A model for team structure; used for organizational design",
+                    "A data storage architecture; used for optimizing performance"
+                ],
+                answer: 1,
+                difficulty: "hard",
+                explanation: "The Dickerson pyramid (or reliability hierarchy) is a hierarchy of reliability needs similar to Maslow's hierarchy, with monitoring at the base, followed by incident response, postmortems, testing, capacity planning, development, and product at the top. It's used to prioritize reliability improvements."
+            },
+            {
+                question: "What is 'Service Mesh' architecture and how does it support SRE goals?",
+                options: [
+                    "A monitoring system that measures service metrics; supports SRE through improved observability",
+                    "An infrastructure layer that handles service-to-service communication; supports SRE through consistent observability, traffic control, and security",
+                    "A documentation framework for service APIs; supports SRE through better communication",
+                    "A deployment strategy for services; supports SRE through reduced rollout risks"
+                ],
+                answer: 1,
+                difficulty: "hard",
+                explanation: "Service Mesh is an infrastructure layer that handles service-to-service communication in microservices architectures. It supports SRE goals by providing consistent observability, traffic control (like circuit breaking and load balancing), and security across services without requiring changes to application code."
+            },
+            {
+                question: "How does SRE typically approach the CAP theorem in distributed systems design?",
+                options: [
+                    "By always prioritizing consistency over availability",
+                    "By always prioritizing availability over consistency",
+                    "By making application-specific trade-offs based on business requirements",
+                    "By attempting to achieve all three properties simultaneously through advanced algorithms"
+                ],
+                answer: 2,
+                difficulty: "hard",
+                explanation: "SRE typically approaches the CAP theorem (which states that distributed systems can have at most two of Consistency, Availability, and Partition tolerance) by making application-specific trade-offs based on business requirements, rather than following a one-size-fits-all approach."
+            },
+            {
+                question: "What is 'dark debt' in the context of site reliability engineering?",
+                options: [
+                    "Hardware that has reached end-of-life but remains in production",
+                    "Security vulnerabilities that haven't been patched",
+                    "Unknown reliability risks in a system due to lack of testing or visibility",
+                    "Technical debt that isn't documented in ticket systems"
+                ],
+                answer: 2,
+                difficulty: "hard",
+                explanation: "Dark debt refers to unknown reliability risks in a system due to lack of testing or visibility. Unlike regular technical debt which is known, dark debt represents risks teams aren't aware of until they cause incidents."
+            },
+            {
+                question: "What is 'histotripsy' in the context of latency measurement and analysis?",
+                options: [
+                    "A technique for aggregating historical performance data",
+                    "The process of breaking down measurements into histograms to avoid losing important distribution information",
+                    "A method for predicting future latency based on past patterns",
+                    "A strategy for eliminating outliers in performance data"
+                ],
+                answer: 1,
+                difficulty: "hard",
+                explanation: "Histotripsy (combining 'histogram' and 'autopsy') is the process of breaking down measurements into histograms to avoid losing important distribution information that would be lost in simple averages or percentiles, allowing for more detailed analysis of latency patterns."
+            },
+            {
+                question: "What is the 'socio-technical' aspect of SRE and why is it important?",
+                options: [
+                    "The use of social media for technical communication; important for team coordination",
+                    "The recognition that both social (team, organization) and technical factors affect reliability; important because purely technical solutions often fail without addressing human factors",
+                    "The socialization of technical concepts to non-technical stakeholders; important for budget approval",
+                    "The technical implementation of social features; important for user engagement"
+                ],
+                answer: 1,
+                difficulty: "hard",
+                explanation: "The socio-technical aspect of SRE recognizes that both social (team dynamics, organizational structure, incentives) and technical factors affect reliability. It's important because purely technical solutions often fail without addressing human factors like communication patterns and organizational structures."
+            },
+            {
+                question: "What is the relationship between 'work queue depth', 'latency', and 'Little's Law' in system performance?",
+                options: [
+                    "They're unrelated concepts in different domains",
+                    "Work queue depth and latency are inversely related; Little's Law doesn't apply",
+                    "Little's Law states that average queue depth = average arrival rate × average processing time; this explains how queue depth relates to latency",
+                    "Little's Law is a legal framework that governs SLA disputes"
+                ],
+                answer: 2,
+                difficulty: "hard",
+                explanation: "Little's Law states that L = λW, where L is average queue depth, λ is average arrival rate, and W is average time in the system. This explains how queue depth relates to latency - as queue depth increases, latency typically increases proportionally, assuming constant processing rate."
+            },
+            {
+                question: "What is the concept of 'error budget burn rate' and why is it significant for SRE practices?",
+                options: [
+                    "The speed at which bugs are fixed; significant for tracking developer productivity",
+                    "The rate at which the error budget is being consumed; significant for determining when to trigger emergency response procedures",
+                    "The percentage of budget allocated to fixing errors; significant for financial planning",
+                    "The rate at which new errors are being discovered; significant for quality assessment"
+                ],
+                answer: 1,
+                difficulty: "hard",
+                explanation: "Error budget burn rate is the rate at which the error budget is being consumed. It's significant because it helps determine the urgency of response - a high burn rate might trigger emergency procedures or development freezes, while a low burn rate indicates healthy operations."
+            },
+            {
+                question: "How does the concept of 'graceful degradation' apply to SRE practices?",
+                options: [
+                    "Gradually reducing system functionality as hardware ages",
+                    "The practice of designing systems to maintain core functionality when under stress by reducing non-essential features",
+                    "Slowly decommissioning legacy systems over time",
+                    "Allowing performance to decrease slightly to save costs"
+                ],
+                answer: 1,
+                difficulty: "hard",
+                explanation: "Graceful degradation is the practice of designing systems to maintain core functionality when under stress by reducing non-essential features. In SRE, this means systems continue providing critical services even when experiencing failures or extreme load."
+            },
+            {
+                question: "What is a 'brown-out test' in the context of disaster recovery?",
+                options: [
+                    "Testing system response to power fluctuations",
+                    "A partial, controlled failure simulation to test failover mechanisms",
+                    "Gradually reducing system capacity to test scaling mechanisms",
+                    "Testing user response to reduced functionality"
+                ],
+                answer: 1,
+                difficulty: "hard",
+                explanation: "A brown-out test is a partial, controlled failure simulation to test failover mechanisms. Unlike a complete blackout, it simulates degraded service conditions to verify that systems can detect and respond appropriately to partial failures."
+            }
+        ];
+    </script>
+</body>
+</html>
